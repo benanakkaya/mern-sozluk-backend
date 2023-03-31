@@ -35,8 +35,16 @@ const UserSchema = new Schema({
         type: String,
         enum: ["Admin", "User"],
         default: "User"
-    }
-});
+    },
+    entries: [{
+        type: Schema.Types.ObjectId,
+        ref:"Entry"
+    }],
+    favorites: [{
+        type: Schema.Types.ObjectId,
+        ref:"Entry"
+    }]
+},{timestamps:true});
 
 
 const UserModel = mongoose.model("User", UserSchema);

@@ -17,19 +17,19 @@ const EntrySchema = new Schema({
         type:String,
         required:true
     },
-    likes: {
+    likes: [{
         type: Schema.Types.ObjectId,
-        ref:"Like"
-    },
-    unlikes: {
+        ref:"User"
+    }],
+    dislikes: [{
         type: Schema.Types.ObjectId,
-        ref:"Unlike"
-    },
-    favorites: {
+        ref:"User"
+    }],
+    favorites: [{
         type: Schema.Types.ObjectId,
-        ref:"Favorite"
-    },
-},{timeStamps:true})
+        ref:"User"
+    }],
+},{timestamps:true})
 
 
 const EntryModel = mongoose.model("Entry",EntrySchema);

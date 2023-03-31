@@ -40,14 +40,14 @@ export const RegisterController = async (req, res) => {
         from: process.env.EMAIL,
         to: email,
         subject: "Mern Sozluk Email Aktivasyonu",
-        html: `<h1>Mern Sözlüğe Hoşgeldiniz</h1><br><h3>Hesap onayınızı gerçekleştirmek için aşağıdaki linke tıklayın.</h3><br>localhost:5000/confirm/${token}`
+        html: `<h1>Mern Sözlüğe Hoşgeldiniz</h1><br><h3>Hesap onayınızı gerçekleştirmek için aşağıdaki linke tıklayın.</h3><br>localhost:5000/user/confirm/${token}`
     }
 
     transporter.sendMail(mailOptions, (err, data) => {
         if (err) return res.status(500).json({ message: "Şu anda kayıt işleminiz yapılamıyor!" })
     })
 
-    return res.status(201).json({ message: "Kayıt işlemi başarılı!", user: createdUser })
+    return res.status(201).json({ message: "Kayıt işemi yapıldı, hesabınızı aktif etmek için mailinize gelen linke tıklayın!", user: createdUser })
 
 }
 
@@ -160,6 +160,14 @@ export const ResetPasswordController = async (req,res) => {
 
     return res.status(200).json({message:"Yeni parolanız e-mail adresinize gönderildi!"});
 
+}
+
+export const GetUserController = async (req,res) => {
+    const {id} = req.body;
+
+    const user = await User.findById(id).populate("entries").populate("favorites");
+
+    return res.status(200).json(user)
 }
 
 

@@ -10,8 +10,13 @@ const TopicSchema = new Schema({
     },
     entries: [{
         type: Schema.Types.ObjectId,
+        ref:"Entry"
     }],
-}, { timeStamps: true });
+    channel: {
+        type:Schema.Types.ObjectId,
+        ref:"Channel"
+    }
+}, { timestamps: true });
 
 
 const TopicModel = mongoose.model("Topic", TopicSchema);

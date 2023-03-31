@@ -6,6 +6,7 @@ import cors from "cors";
 import userRouter from "./routes/UserRoute.js"
 import topicRouter from "./routes/TopicRoute.js"
 import entryRouter from "./routes/EntryRoute.js"
+import channelRouter from "./routes/ChannelRoute.js"
 import nodemailer from "nodemailer";
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.get("/", (req,res) => {
 app.use("/user", userRouter);
 app.use("/topic", topicRouter);
 app.use("/entry", entryRouter);
+app.use("/channel", channelRouter);
 
 
 
