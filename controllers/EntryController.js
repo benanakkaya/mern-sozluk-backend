@@ -20,7 +20,7 @@ export const NewEntryController = async (req, res) => {
     const createdEntry = await Entry.create({
         topic,
         owner,
-        text
+        text:text.toLowerCase()
     });
 
     await Topic.findByIdAndUpdate(topic, { entries: [...targetTopic.entries, createdEntry._id] });
