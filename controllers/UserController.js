@@ -8,13 +8,13 @@ import generator from "generate-password"
 export const RegisterController = async (req, res) => {
     const { username, email, password, password2, birthday, gender } = req.body;
 
-    const usernameControl = await User.findOne({ email });
+    const usernameControl = await User.findOne({ username });
 
     if (usernameControl) {
         return res.status(500).json({ message: "Zaten böyle bir kullanıcı mevcut mevcut!" })
     }
 
-    const emailControl = await User.findOne({ username });
+    const emailControl = await User.findOne({ email });
 
     if (emailControl) {
         return res.status(500).json({ message: "Bu e-mail adresi zaten kayıtlı!" })
@@ -47,7 +47,7 @@ export const RegisterController = async (req, res) => {
         if (err) return res.status(500).json({ message: "Şu anda kayıt işleminiz yapılamıyor!" })
     })
 
-    return res.status(201).json({ message: "Kayıt işemi yapıldı, hesabınızı aktif etmek için mailinize gelen linke tıklayın!", user: createdUser })
+    return res.status(201).json({ message: "Kayıt başarılı, mailinize gelen linke tıkladıktan sonra giriş yapabilirsiniz!", user: createdUser })
 
 }
 
@@ -73,12 +73,12 @@ export const ConfirmController = async (req, res) => {
 }
 
 export const LoginController = async (req,res) => {
-    const {username,password} = req.body;
+    const {email,password} = req.body;
 
-    const userCheck = await User.findOne({username});
+    const userCheck = await User.findOne({email});
 
     if(!userCheck){
-        return res.status(500).json({message:"Böyle bir kullanıcı bulunamadı!"});
+        return res.status(500).json({message:"Kayıtlı e-mail bulunamadı!"});
     }
 
     if(!userCheck.confirmed){

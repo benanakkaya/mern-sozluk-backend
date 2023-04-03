@@ -24,8 +24,8 @@ const UserSchema = new Schema({
     },
     gender: {
         type: String,
-        enum: ["Kadın", "Erkek", "Başka", "Boşver"],
-        default: "Boşver"
+        enum: ["kadın", "erkek", "başka", "boşver"],
+        default: "boşver"
     },
     confirmed: {
         type: Boolean,
@@ -43,7 +43,10 @@ const UserSchema = new Schema({
     favorites: [{
         type: Schema.Types.ObjectId,
         ref:"Entry"
-    }]
+    }],
+    avatar:{
+        type:String
+    }
 },{timestamps:true});
 
 
