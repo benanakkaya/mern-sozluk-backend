@@ -108,75 +108,91 @@ export const GetHotTopicsController = async (req, res) => {
 
 export const GetTopicDataController = async (req, res) => {
   const { topicId } = req.body; // Id'yi alın
-  const id = new mongoose.Types.ObjectId(topicId);
-  const topic = await Topic.aggregate([
-    {
-      $match: {
-        _id: id, // Sadece id'ye uyan topicleri seçin
-        updatedAt: {
-          $gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        },
-      },
-    },
-    {
-      $lookup: {
-        from: "entries",
-        localField: "entries",
-        foreignField: "_id",
-        as: "entries",
-      },
-    },
-    {
-      $addFields: {
-        entryCountLast24Hours: {
-          $size: {
-            $filter: {
-              input: "$entries",
-              as: "entry",
-              cond: {
-                $gte: ["$$entry.updatedAt", new Date(Date.now() - 24 * 60 * 60 * 1000)],
-              },
-            },
-          },
-        },
-        totalEntriesCount: {
-          $size: "$entries",
-        },
-      },
-    },
-    {
-      $addFields: {
-        entries: {
-          $filter: {
-            input: "$entries",
-            as: "entry",
-            cond: {
-              $gte: ["$$entry.updatedAt", new Date(Date.now() - 24 * 60 * 60 * 1000)],
-            },
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        totalEntriesCount: 1,
-        entryCountLast24Hours: {
-          $subtract: ["$totalEntriesCount", "$entryCountLast24Hours"]
-        },
-        entries: 1,
-        title: 1,
-        createdAt: 1,
-        updatedAt: 1,
-      },
-    },
-  ]);
+  // const id = new mongoose.Types.ObjectId(topicId);
 
-  for (let i = 0; i < topic[0].entries.length; i++) {
-    const ownerId = topic[0].entries[i].owner;
-    const user = await User.findById(ownerId);
-    topic[0].entries[i].owner = user;
-  }
+  const topic = await Topic.findById(topicId).populate("entries").populate({
+    path: 'entries.owner',
+    model: 'User'
+  });
+
+
+  // const topic = await Topic.aggregate([
+  //   {
+  //     $match: {
+  //       _id: id, // Sadece id'ye uyan topicleri seçin
+  //       updatedAt: {
+  //         $gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $lookup: {
+  //       from: "entries",
+  //       localField: "entries",
+  //       foreignField: "_id",
+  //       as: "entries",
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       entryCountLast24Hours: {
+  //         $size: {
+  //           $filter: {
+  //             input: "$entries",
+  //             as: "entry",
+  //             cond: {
+  //               $gte: ["$$entry.updatedAt", new Date(Date.now() - 24 * 60 * 60 * 1000)],
+  //             },
+  //           },
+  //         },
+  //       },
+  //       totalEntriesCount: {
+  //         $size: "$entries",
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       entries: {
+  //         $filter: {
+  //           input: "$entries",
+  //           as: "entry",
+  //           cond: {
+  //             $gte: ["$$entry.updatedAt", new Date(Date.now() - 24 * 60 * 60 * 1000)],
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $project: {
+  //       totalEntriesCount: 1,
+  //       entryCountLast24Hours: {
+  //         $subtract: ["$totalEntriesCount", "$entryCountLast24Hours"]
+  //       },
+  //       entries: 1,
+  //       title: 1,
+  //       createdAt: 1,
+  //       updatedAt: 1,
+  //     },
+  //   },
+  // ]);
+
+  // for (let i = 0; i < topic[0].entries.length; i++) {
+  //   const ownerId = topic[0].entries[i].owner;
+  //   const user = await User.findById(ownerId);
+  //   topic[0].entries[i].owner = user;
+  // }
 
 
   return res.status(200).json(topic);
 };
+
+
+export const SearchTopicController = async (req, res) => {
+  const { searchIndex } = req.body;
+
+  const topicList = await Topic.find({ title: { $regex: new RegExp(searchIndex) } });
+
+  return res.status(200).json(topicList);
+}

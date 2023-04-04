@@ -165,7 +165,7 @@ export const ResetPasswordController = async (req,res) => {
 export const GetUserController = async (req,res) => {
     const {id} = req.body;
 
-    const user = await User.findById(id).populate("entries").populate("favorites");
+    const user = await User.findById(id);
 
     return res.status(200).json(user)
 }
