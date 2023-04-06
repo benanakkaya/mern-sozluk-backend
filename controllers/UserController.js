@@ -93,7 +93,7 @@ export const LoginController = async (req,res) => {
 
     const token = await createToken(userCheck._id);
 
-    return res.status(200).json({message:"Tebrikler, başarıyla giriş yaptınız!",token});
+    return res.status(200).json({message:"Tebrikler, başarıyla giriş yaptınız!",token,user:userCheck});
 
 }
 

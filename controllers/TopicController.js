@@ -42,6 +42,13 @@ export const GetTopicController = async (req, res) => {
 
 }
 
+export const RecentlyUpdatedController = async (req,res) => {
+
+  const topics = await Topic.find().sort({updatedAt:-1}).limit(50);
+
+  return res.status(200).json(topics);
+}
+
 
 export const GetHotTopicsController = async (req, res) => {
   try {
@@ -110,10 +117,14 @@ export const GetTopicDataController = async (req, res) => {
   const { topicId } = req.body; // Id'yi alın
   // const id = new mongoose.Types.ObjectId(topicId);
 
-  const topic = await Topic.findById(topicId).populate("entries").populate({
-    path: 'entries.owner',
-    model: 'User'
-  });
+  const topic = await Topic.findById(topicId).populate({
+    path: 'entries',
+    select: '-__v',
+    populate: {
+      path: 'owner',
+      select: 'username -_id'
+    }
+  })
 
 
   // const topic = await Topic.aggregate([
@@ -192,7 +203,23 @@ export const GetTopicDataController = async (req, res) => {
 export const SearchTopicController = async (req, res) => {
   const { searchIndex } = req.body;
 
-  const topicList = await Topic.find({ title: { $regex: new RegExp(searchIndex) } });
+  const topicList = await Topic.find({ title: { $regex: new RegExp(searchIndex) } }).limit(5);
 
   return res.status(200).json(topicList);
+}
+
+export const RandomTopic = async (req,res) => {
+
+  const count = await Topic.countDocuments();
+  const random =  Math.floor(Math.random()*count);
+  const topic = await Topic.findOne().skip(random).populate({
+    path: 'entries',
+    select: '-__v',
+    populate: {
+      path: 'owner',
+      select: 'username -_id'
+    }
+  })
+
+  return res.status(200).json(topic);
 }

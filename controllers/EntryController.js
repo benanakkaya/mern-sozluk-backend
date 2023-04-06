@@ -60,11 +60,11 @@ export const LikeController = async (req, res) => {
     if (entry.likes.includes(userId)) {
         const updatedEntry = await Entry.findByIdAndUpdate(entryId, { $pull: { likes: userId } }, { new: true });
 
-        return res.status(500).json({ message: "Like kaldırıldı!", entry: updatedEntry })
+        return res.status(200).json({ message: "Like kaldırıldı!", entry: updatedEntry })
     }
     else {
         const updatedEntry = await Entry.findByIdAndUpdate(entryId, { $push: { likes: userId } }, { new: true });
-        return res.status(500).json({ message: "Like verildi!", entry: updatedEntry })
+        return res.status(200).json({ message: "Like verildi!", entry: updatedEntry })
     }
 
 }
@@ -81,11 +81,11 @@ export const DislikeController = async (req, res) => {
     if (entry.dislikes.includes(userId)) {
         const updatedEntry = await Entry.findByIdAndUpdate(entryId, { $pull: { dislikes: userId } }, { new: true });
 
-        return res.status(500).json({ message: "Dislike kaldırıldı!", entry: updatedEntry })
+        return res.status(200).json({ message: "Dislike kaldırıldı!", entry: updatedEntry })
     }
     else {
         const updatedEntry = await Entry.findByIdAndUpdate(entryId, { $push: { dislikes: userId } }, { new: true });
-        return res.status(500).json({ message: "Dislike verildi!", entry: updatedEntry })
+        return res.status(200).json({ message: "Dislike verildi!", entry: updatedEntry })
     }
 
 }
@@ -106,3 +106,4 @@ export const FavoriteController = async (req, res) => {
     }
 
 }
+
