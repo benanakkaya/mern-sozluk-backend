@@ -36,7 +36,8 @@ export const DeleteEntryController = async (req, res) => {
     await Entry.findByIdAndRemove(entryId);
 
     const targetTopic = await Topic.findById(topicId)
-    const targetUser = await User.findById(ownerId)
+    const targetUser = await User.findById(ownerId  )
+
 
     const newTopicEntries = targetTopic.entries.filter((entry) => entry.toString() !== entryId);
     const newUserEntries = targetUser.entries.filter((entry) => entry.toString() !== entryId);

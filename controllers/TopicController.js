@@ -114,10 +114,13 @@ export const GetHotTopicsController = async (req, res) => {
 };
 
 export const GetTopicDataController = async (req, res) => {
-  const { topicId } = req.body; // Id'yi alın
+  const { title } = req.body; // Id'yi alın
+
+  const decodedTitle = decodeURIComponent(title);
   // const id = new mongoose.Types.ObjectId(topicId);
 
-  const topic = await Topic.findById(topicId).populate({
+
+  const topic = await Topic.findOne({title:decodedTitle}).populate({
     path: 'entries',
     select: '-__v',
     populate: {
@@ -126,6 +129,13 @@ export const GetTopicDataController = async (req, res) => {
     }
   })
 
+  if(topic === null){
+    const emtptyTopic = {
+      title:decodedTitle,
+      entries:[]
+    }
+    return res.status(200).json(emtptyTopic);
+  }
 
   // const topic = await Topic.aggregate([
   //   {
