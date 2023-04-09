@@ -3,6 +3,7 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { transporter } from "../index.js";
 import generator from "generate-password"
+import TopicModel from "../models/TopicModel.js";
 
 
 export const RegisterController = async (req, res) => {
@@ -168,6 +169,30 @@ export const GetUserController = async (req,res) => {
     const user = await User.findById(id);
 
     return res.status(200).json(user)
+}
+
+export const GetProfileController = async (req,res) => {
+    const {username} = req.body;
+
+    const userProfile = await User.findOne({username}).populate({
+        path: 'entries',
+        populate: [
+          { path: 'topic', model: 'Topic' },
+          { path: 'owner', model: 'User' }
+        ]
+      }).populate({
+        path: 'favorites',
+        populate: [
+          { path: 'topic', model: 'Topic' },
+          { path: 'owner', model: 'User' }
+        ]
+      }).sort({ 'entries.createdAt': -1 });;
+
+    if(!userProfile){
+        return res.status(500).json({message:"Böyle bir kullanıcı bulunamadı"})
+    }
+
+    return res.status(200).json(userProfile);
 }
 
 
