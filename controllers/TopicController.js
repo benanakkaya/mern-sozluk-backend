@@ -116,6 +116,17 @@ export const GetHotTopicsController = async (req, res) => {
 export const GetTopicDataController = async (req, res) => {
   const { title } = req.body; // Id'yi alın
 
+  let {page} = req.body ;
+
+  if(page === 0 || !page){
+    page = 1;
+  }
+
+  const limit = 5;
+
+  const skip = (page - 1) * limit;
+
+
   const decodedTitle = decodeURIComponent(title);
   // const id = new mongoose.Types.ObjectId(topicId);
 
@@ -123,9 +134,13 @@ export const GetTopicDataController = async (req, res) => {
   const topic = await Topic.findOne({title:decodedTitle}).populate({
     path: 'entries',
     select: '-__v',
+    options: {
+      skip: skip,
+      limit: limit
+  },
     populate: {
       path: 'owner',
-      select: 'username -_id'
+      select: 'username avatar -_id'
     }
   })
 
@@ -137,76 +152,12 @@ export const GetTopicDataController = async (req, res) => {
     return res.status(200).json(emtptyTopic);
   }
 
-  // const topic = await Topic.aggregate([
-  //   {
-  //     $match: {
-  //       _id: id, // Sadece id'ye uyan topicleri seçin
-  //       updatedAt: {
-  //         $gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
-  //       },
-  //     },
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: "entries",
-  //       localField: "entries",
-  //       foreignField: "_id",
-  //       as: "entries",
-  //     },
-  //   },
-  //   {
-  //     $addFields: {
-  //       entryCountLast24Hours: {
-  //         $size: {
-  //           $filter: {
-  //             input: "$entries",
-  //             as: "entry",
-  //             cond: {
-  //               $gte: ["$$entry.updatedAt", new Date(Date.now() - 24 * 60 * 60 * 1000)],
-  //             },
-  //           },
-  //         },
-  //       },
-  //       totalEntriesCount: {
-  //         $size: "$entries",
-  //       },
-  //     },
-  //   },
-  //   {
-  //     $addFields: {
-  //       entries: {
-  //         $filter: {
-  //           input: "$entries",
-  //           as: "entry",
-  //           cond: {
-  //             $gte: ["$$entry.updatedAt", new Date(Date.now() - 24 * 60 * 60 * 1000)],
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   {
-  //     $project: {
-  //       totalEntriesCount: 1,
-  //       entryCountLast24Hours: {
-  //         $subtract: ["$totalEntriesCount", "$entryCountLast24Hours"]
-  //       },
-  //       entries: 1,
-  //       title: 1,
-  //       createdAt: 1,
-  //       updatedAt: 1,
-  //     },
-  //   },
-  // ]);
+  const topicAll = await Topic.findOne({title:decodedTitle});
 
-  // for (let i = 0; i < topic[0].entries.length; i++) {
-  //   const ownerId = topic[0].entries[i].owner;
-  //   const user = await User.findById(ownerId);
-  //   topic[0].entries[i].owner = user;
-  // }
+  const totalCount = topicAll.entries.length;
+  const totalPages = Math.ceil(totalCount / limit);
 
-
-  return res.status(200).json(topic);
+  return res.status(200).json({...topic._doc,totalCount,totalPages});
 };
 
 
@@ -227,7 +178,7 @@ export const RandomTopic = async (req,res) => {
     select: '-__v',
     populate: {
       path: 'owner',
-      select: 'username -_id'
+      select: 'username avatar -_id'
     }
   })
 

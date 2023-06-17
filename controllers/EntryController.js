@@ -45,6 +45,11 @@ export const DeleteEntryController = async (req, res) => {
     const updatedTopic = await Topic.findByIdAndUpdate(topicId, { entries: newTopicEntries },{new:true});
     const updatedUser = await User.findByIdAndUpdate(ownerId, { entries: newUserEntries },{new:true});
 
+    await User.updateMany(
+        { favorites: entryId }, // Favori listesinde postun ID'sini içeren kullanıcıları bul
+        { $pull: { favorites: entryId } } // Favori listesinden postun ID'sini çıkar
+      );
+
     return res.status(200).json({message:"Entry başarıyla silindi!",topic:updatedTopic,user:updatedUser});
 
 }

@@ -29,7 +29,7 @@ const UserSchema = new Schema({
     },
     confirmed: {
         type: Boolean,
-        default: false
+        default: true
     },
     userType: {
         type: String,
@@ -45,7 +45,8 @@ const UserSchema = new Schema({
         ref:"Entry"
     }],
     avatar:{
-        type:String
+        type:String,
+        default: ""
     }
 },{timestamps:true});
 

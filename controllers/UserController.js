@@ -92,9 +92,9 @@ export const LoginController = async (req,res) => {
         return res.status(400).json({message:"Lütfen parolanızı kontrol edin!"})
     }
 
-    const token = await createToken(userCheck._id);
+    const token = await createToken(userCheck);
 
-    return res.status(200).json({message:"Tebrikler, başarıyla giriş yaptınız!",token,user:userCheck});
+    return res.status(200).json({message:"Tebrikler, başarıyla giriş yaptınız!",token,user:{id:userCheck._id,username:userCheck.username}});
 
 }
 
@@ -195,7 +195,17 @@ export const GetProfileController = async (req,res) => {
     return res.status(200).json(userProfile);
 }
 
+export const SetAvatarController = async (req,res) => {
+    const {avatar,user} = req.body;
 
-const createToken = async (userID) => {
-    return jwt.sign({ userID }, "SECRET_KEY", { expiresIn: "1d" });
+    await User.findByIdAndUpdate(user, {avatar:avatar})
+    
+    return res.status(200).json({message:"Avatar başarıyla güncellendi!"});
+}
+
+
+
+
+const createToken = async (user) => {
+    return jwt.sign({ id:user._id,username:user.username }, "SECRET_KEY", { expiresIn: "1d" });
 }
