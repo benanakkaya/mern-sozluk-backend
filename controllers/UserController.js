@@ -41,8 +41,8 @@ export const RegisterController = async (req, res) => {
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    subject: "Mern Sozluk Email Aktivasyonu",
-    html: `<h1>Mern Sözlüğe Hoşgeldiniz</h1><br><h3>Hesap onayınızı gerçekleştirmek için aşağıdaki linke tıklayın.</h3><br>localhost:5000/user/activate/${token}`,
+    subject: "Mern Sozluk Hesap Aktivasyonu",
+    html: `<h1>Mern Sözlüğe Hoşgeldiniz</h1><br><h3>Hesap onayınızı gerçekleştirmek için aşağıdaki bağlantıya gidin.</h3><br>https://mern-sozluk.vercel.app/user/activate/${token}`,
   };
 
   transporter.sendMail(mailOptions, (err, data) => {
