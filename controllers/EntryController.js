@@ -113,3 +113,32 @@ export const FavoriteController = async (req, res) => {
 
 }
 
+
+export const GetLastEntriesController = async (req,res) => {
+    
+
+    const lastEntries = await Entry.find()
+  .sort({ createdAt: -1 })
+  .limit(5)
+  .populate("topic", "title")
+  .populate("owner", "username _id avatar");
+
+
+    return res.status(200).json(lastEntries)
+}
+
+
+export const GetRandomEntryController = async (req,res) => {
+
+    const count = await Topic.countDocuments();
+    const random =  Math.floor(Math.random()*count);
+  
+    const randomEntry = await Entry.findOne()
+    .skip(random)
+    .populate("topic", "title")
+    .populate("owner", "username _id avatar");
+
+
+    return res.status(200).json(randomEntry)
+}
+
